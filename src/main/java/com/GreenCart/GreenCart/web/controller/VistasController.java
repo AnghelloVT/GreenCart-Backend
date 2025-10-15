@@ -10,6 +10,20 @@ public class VistasController {
         return "Principal";
     }
 
+    @GetMapping("/Vendedor")
+    public String mostrarVendedor(){
+        return "CarritoCompras";
+    }
+    @GetMapping("/Comprador")
+    public String mostrarComprador(){
+        return "CarritoCompras";
+    }
+
+    @GetMapping("/Administrador")
+    public String mostrarAdministrador(){
+        return "CarritoCompras";
+    }
+
     @GetMapping("/CarritoCompras")
     public String mostrarCarritoCompras(){
         return "CarritoCompras";

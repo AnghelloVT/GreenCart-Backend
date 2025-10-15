@@ -2,7 +2,7 @@ package com.GreenCart.GreenCart.persistance.mapper;
 
 import com.GreenCart.GreenCart.domain.Product;
 import com.GreenCart.GreenCart.persistance.entity.Producto;
-import org.mapstruct.InheritInverseConfiguration;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -26,7 +26,17 @@ public interface ProductMapper {
 
     List<Product> toProducts(List<Producto>productos);
 
-    @InheritInverseConfiguration
-    @Mapping(target = "imagen", ignore = true)
+    
+     @Mappings({
+            @Mapping(target = "idProducto", ignore = true), 
+            @Mapping(source = "productName", target = "nombre"),
+            @Mapping(source = "categoryId", target = "idCategoria"),
+            @Mapping(source = "productDescription", target = "descripcionproducto"),
+            @Mapping(source = "productPrice", target = "preciounitario"),
+            @Mapping(source = "productStock", target = "cantidadStock"),
+            @Mapping(source = "active", target = "estado"),
+            @Mapping(target = "imagen", ignore = true),
+            @Mapping(target = "categoria", ignore = true)
+    })
     Producto toProducto(Product product);
 }

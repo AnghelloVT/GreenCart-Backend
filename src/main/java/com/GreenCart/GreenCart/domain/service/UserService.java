@@ -3,6 +3,7 @@ package com.GreenCart.GreenCart.domain.service;
 
 import com.GreenCart.GreenCart.domain.User;
 import com.GreenCart.GreenCart.domain.repository.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +15,7 @@ import java.util.Optional;
 public class UserService {
 
     @Autowired
-    private UserService userRepository;
+    private UserRepository  userRepository;
 
      public List<User> getAll() {
         return userRepository.getAll();

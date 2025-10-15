@@ -9,7 +9,7 @@ public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_producto")
-    private String idProducto;
+    private Integer  idProducto;
 
     private String nombre;
 
@@ -74,11 +74,11 @@ public class Producto {
         this.nombre = nombre;
     }
 
-    public String getIdProducto() {
+    public Integer  getIdProducto() {
         return idProducto;
     }
 
-    public void setIdProducto(String idProducto) {
+    public void setIdProducto(Integer  idProducto) {
         this.idProducto = idProducto;
     }
 
