@@ -75,7 +75,7 @@ CREATE TABLE Pedido_Item (
     cantidad INT NOT NULL,
     precio_unitario DECIMAL(10,2) NOT NULL,
     total DECIMAL(10,2) NOT NULL,
-    FOREIGN KEY (id_producto) REFERENCES Producto(id_producto),
+    FOREIGN KEY (id_producto) REFERENCES PRODUCTOS(id_producto),
     FOREIGN KEY (id_pedido) REFERENCES Pedido(id_pedido)
 );
 
@@ -93,24 +93,23 @@ CREATE TABLE Reclamo (
 
 -- Insertar roles
 INSERT INTO Roles (nombre) VALUES 
-('ROLE_USER'),
-('ROLE_ADMIN');
+('ROLE_ADMIN'),
+('ROLE_VENDEDOR'),
+('ROLE_COMPRADOR');
 
 -- Insertar usuarios
 INSERT INTO Usuario (nombre, apellido, direccion, telefono, dni, correo, contraseña) VALUES
-('Juan', 'Pérez', 'Libertadores 123', 987654321, 72345678, 'juan.perez@gmail.com', 'contra1234'),
-('Ana', 'Rodríguez', 'Av. Abancay 742', 912345678, 77654321, 'ana.rodriguez@gmail.com', 'clave123');
+('Juan', 'Pérez', 'Libertadores 123', 987654321, 72345678, 'juan.perez@gmail.com', 'contra1234'), 
+('Ana', 'Rodríguez', 'Av. Abancay 742', 912345678, 77654321, 'ana.rodriguez@gmail.com', 'clave123'), 
+('Carlos', 'Ramírez', 'Calle Falsa 123', 923456789, 78901234, 'carlos.ramirez@gmail.com', 'clave456'); 
 
--- Insertar productos
-INSERT INTO Producto (nombre, descripcion, precio, imagen, categoria) VALUES
-('Envase Ecologico', 'Muy practica', 45.00, 'envase.jpg', 'Envases'),
-('Bolsa Ecologica', 'Muy practica', 90.00, 'bolsa.jpg', 'Biodegradables');
+
 
 -- Asignar roles a usuarios
 INSERT INTO Usuario_Rol (id_usuario, id_rol) VALUES
-(1, 1), -- Juan como ROLE_ADMIN
-(2, 1), -- Ana como ROLE_USER
-(2, 2); -- Ana también como ROLE_ADMIN
+(1, 1), -- ADMIN
+(2, 3), -- COMPRADOR
+(3, 2); -- VENDEDOR
 
 -- Insertar pedidos
 INSERT INTO Pedido (id_usuario, fecha, estado, total) VALUES
@@ -124,4 +123,4 @@ INSERT INTO Pedido_Item (id_producto, id_pedido, cantidad, precio_unitario, tota
 
 -- Insertar reclamos
 INSERT INTO Reclamo (id_usuario, rol, fecha_pedido, motivo_reclamo, detalle, estado) VALUES
-(1, 'ROLE_USER', '2025-09-10', 'Producto dañado', 'El envase llego dañado en un costado', 'Pendiente')
+(1, 'ROLE_COMPRADOR', '2025-09-10', 'Producto dañado', 'El envase llegó dañado en un costado', 'Pendiente');
