@@ -2,13 +2,17 @@
 package com.GreenCart.GreenCart.domain.repository;
 
 import com.GreenCart.GreenCart.domain.User;
-
-import java.util.List;
+import com.GreenCart.GreenCart.persistance.entity.Usuario;
 import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface UserRepository {
-    List<User> getAll();
-    Optional<User> getUser(int userId);
-    User save(User user);
-    void delete(int userId);
+@Repository
+public interface UserRepository extends JpaRepository<Usuario, Long> {
+
+
+    Optional<Usuario> findByCorreo(String correo);
+
+    boolean existsByCorreo(String correo);
 }
+

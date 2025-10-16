@@ -2,31 +2,24 @@
 package com.GreenCart.GreenCart.domain;
 
 public class Role {
-    private Integer id;
-    private String nombre;
 
-    // Constructor
-    public Role() {}
+    private Integer idRole;
+    private String name;
 
-    public Role(Integer id, String nombre) {
-        this.id = id;
-        this.nombre = nombre;
+    public Integer getIdRole() {
+        return idRole;
     }
 
-    // Getters y setters
-    public Integer getId() {
-        return id;
+    public void setIdRole(Integer idRole) {
+        this.idRole = idRole;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public String getName() {
+        return name;
     }
 
-    public String getNombre() {
-        return nombre;
-    }
+    public void setName(String name) {
+        this.name = name;
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
     }
 }

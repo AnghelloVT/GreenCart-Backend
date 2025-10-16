@@ -1,7 +1,6 @@
 package com.GreenCart.GreenCart.persistance.entity;
 import jakarta.persistence.*;
 
-
 @Entity
 @Table(name = "Roles")
 public class Rol {

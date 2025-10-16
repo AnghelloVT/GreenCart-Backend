@@ -1,6 +1,5 @@
 package com.GreenCart.GreenCart.persistance.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -10,41 +9,35 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-import java.util.List;
-
+import java.util.Set;
 
 @Entity
-@Table(name = "Usuario")
 public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
-     @Column(name = "id_usuario") // mapea a la columna SQL id_usuario
-    private Integer idUsuario;
-
+    private Long id;
     private String nombre;
-    private String apellido;
-    private String direccion;
-    private Long telefono;
-    private Long dni;
+    private String apellidos;
     private String correo;
+    private String dni;
+    private String direccion;
+    private String telefono;
     private String contraseña;
-
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-        name = "Usuario_Rol",
-        joinColumns = @JoinColumn(name = "id_usuario"),
-        inverseJoinColumns = @JoinColumn(name = "id_rol")
+            name = "Usuario_Rol",
+            joinColumns = @JoinColumn(name = "id_usuario"),
+            inverseJoinColumns = @JoinColumn(name = "id_rol")
     )
-    private List<Rol> roles;
+    private Set<Rol> rol;
 
-    public Integer getIdUsuario() {
-        return idUsuario;
+    public Long getId() {
+        return id;
     }
 
-    public void setIdUsuario(Integer idUsuario) {
-        this.idUsuario = idUsuario;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getNombre() {
@@ -55,36 +48,12 @@ public class Usuario {
         this.nombre = nombre;
     }
 
-    public String getApellido() {
-        return apellido;
+    public String getApellidos() {
+        return apellidos;
     }
 
-    public void setApellido(String apellido) {
-        this.apellido = apellido;
-    }
-
-    public String getDireccion() {
-        return direccion;
-    }
-
-    public void setDireccion(String direccion) {
-        this.direccion = direccion;
-    }
-
-    public Long getTelefono() {
-        return telefono;
-    }
-
-    public void setTelefono(Long telefono) {
-        this.telefono = telefono;
-    }
-
-    public Long getDni() {
-        return dni;
-    }
-
-    public void setDni(Long dni) {
-        this.dni = dni;
+    public void setApellidos(String apellidos) {
+        this.apellidos = apellidos;
     }
 
     public String getCorreo() {
@@ -95,6 +64,30 @@ public class Usuario {
         this.correo = correo;
     }
 
+    public String getDni() {
+        return dni;
+    }
+
+    public void setDni(String dni) {
+        this.dni = dni;
+    }
+
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
     public String getContraseña() {
         return contraseña;
     }
@@ -103,13 +96,12 @@ public class Usuario {
         this.contraseña = contraseña;
     }
 
-    public List<Rol> getRoles() {
-        return roles;
+    public Set<Rol> getRol() {
+        return rol;
     }
 
-    public void setRoles(List<Rol> roles) {
-        this.roles = roles;
+    public void setRol(Set<Rol> rol) {
+        this.rol = rol;
     }
-    
-    
+
 }
