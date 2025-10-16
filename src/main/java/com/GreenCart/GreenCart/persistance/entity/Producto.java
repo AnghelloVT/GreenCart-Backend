@@ -9,7 +9,7 @@ public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_producto")
-    private String idProducto;
+    private Long idProducto;
 
     private String nombre;
 
@@ -74,14 +74,15 @@ public class Producto {
         this.nombre = nombre;
     }
 
-    public String getIdProducto() {
+    public Long getIdProducto() {
         return idProducto;
     }
 
-    public void setIdProducto(String idProducto) {
+    public void setIdProducto(Long idProducto) {
         this.idProducto = idProducto;
     }
 
+   
     public Integer getCantidadStock() {
         return cantidadStock;
     }
