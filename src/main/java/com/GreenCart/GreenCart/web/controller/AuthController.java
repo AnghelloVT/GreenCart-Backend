@@ -2,8 +2,11 @@ package com.GreenCart.GreenCart.web.controller;
 
 import com.GreenCart.GreenCart.domain.User;
 import com.GreenCart.GreenCart.domain.service.UsuarioService;
+import com.GreenCart.GreenCart.persistance.entity.Rol;
 import com.GreenCart.GreenCart.persistance.entity.Usuario;
 import java.util.Map;
+import java.util.Set;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,7 +38,19 @@ public class AuthController {
         usuario.setDni(body.get("dni"));
         usuario.setAddress(body.get("direccion"));
         usuario.setPhone(body.get("telefono"));
-        usuario.setPassword(body.get("contraseña")); 
+        usuario.setPassword(body.get("contraseña"));
+
+        String rolSeleccionado = body.get("rol");
+
+        String nombreRol;
+        switch (rolSeleccionado) {
+            case "3" -> nombreRol = "ADMINISTRADOR";
+            case "2" -> nombreRol = "COMPRADOR";
+            case "1" -> nombreRol = "VENDEDOR";
+            default -> nombreRol = "COMPRADOR";
+        }
+
+        usuarioService.asignarRol(usuario, nombreRol);
 
         usuarioService.registrarUsuario(usuario);
         return ResponseEntity.ok("ok");

@@ -14,7 +14,7 @@ public class SecurityConfig {
                 .cors().and()
                 .csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/login", "/registro").permitAll()
+                .requestMatchers("/login", "/registro", "/productos/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .httpBasic().disable();
