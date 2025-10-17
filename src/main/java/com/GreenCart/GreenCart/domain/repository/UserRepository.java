@@ -1,3 +1,4 @@
+
 package com.GreenCart.GreenCart.domain.repository;
 
 import com.GreenCart.GreenCart.domain.User;
@@ -14,3 +15,4 @@ public interface UserRepository extends JpaRepository<Usuario, Long> {
 
     boolean existsByCorreo(String correo);
 }
+

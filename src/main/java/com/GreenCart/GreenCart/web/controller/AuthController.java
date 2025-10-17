@@ -57,14 +57,28 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestParam Map<String, String> body) {
-        String correo = body.get("correo");
-        String contrasenia = body.get("contraseña");
+public ResponseEntity<Map<String, String>> login(@RequestParam Map<String, String> body) {
+    String correo = body.get("correo");
+    String contrasenia = body.get("contraseña");
 
-        if (usuarioService.validarCredenciales(correo, contrasenia)) {
-            return ResponseEntity.ok("ok");
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("error");
+    if (usuarioService.validarCredenciales(correo, contrasenia)) {
+        Usuario usuario = usuarioService.obtenerEntidadPorCorreo(correo);
+        if (usuario == null || usuario.getRol().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("status", "error"));
         }
+
+        // Obtener el primer rol asignado
+        String rol = usuario.getRol().stream()
+                .findFirst()
+                .map(r -> r.getNombre().toLowerCase()) // ejemplo: "administrador"
+                .orElse("comprador");
+
+        return ResponseEntity.ok(Map.of(
+            "status", "ok",
+            "rol", rol
+        ));
+    } else {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("status", "error"));
     }
+}
 }
