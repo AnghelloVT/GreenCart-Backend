@@ -34,6 +34,6 @@ public class UsuarioRepository {
     }
 
     public Optional<Usuario> findUsuarioByCorreo(String correo) {
-    return userRepository.findByCorreo(correo); // `userRepository` es un JpaRepository< Usuario, Long >
+    return userRepository.findByCorreo(correo); 
 }
 }

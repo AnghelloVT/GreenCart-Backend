@@ -15,7 +15,7 @@ public class User {
     private String password;
     private Set<Role> roles;
     
-    //getters y setters
+    
 
     public Long getId() {
         return id;

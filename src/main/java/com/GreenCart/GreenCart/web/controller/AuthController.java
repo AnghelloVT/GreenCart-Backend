@@ -67,10 +67,10 @@ public ResponseEntity<Map<String, String>> login(@RequestParam Map<String, Strin
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("status", "error"));
         }
 
-        // Obtener el primer rol asignado
+       
         String rol = usuario.getRol().stream()
                 .findFirst()
-                .map(r -> r.getNombre().toLowerCase()) // ejemplo: "administrador"
+                .map(r -> r.getNombre().toLowerCase())
                 .orElse("comprador");
 
         return ResponseEntity.ok(Map.of(
