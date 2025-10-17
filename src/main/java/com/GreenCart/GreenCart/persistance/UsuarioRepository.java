@@ -32,4 +32,8 @@ public class UsuarioRepository {
     public boolean existsByCorreo(String correo) {
         return userRepository.existsByCorreo(correo);
     }
+
+    public Optional<Usuario> findUsuarioByCorreo(String correo) {
+    return userRepository.findByCorreo(correo); // `userRepository` es un JpaRepository< Usuario, Long >
+}
 }

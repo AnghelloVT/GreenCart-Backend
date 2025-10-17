@@ -3,6 +3,8 @@ package com.GreenCart.GreenCart.domain.service;
 import com.GreenCart.GreenCart.domain.User;
 import com.GreenCart.GreenCart.domain.repository.RoleRepository;
 import com.GreenCart.GreenCart.persistance.UsuarioRepository;
+import com.GreenCart.GreenCart.persistance.entity.Usuario;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -40,4 +42,8 @@ public class UsuarioService {
                 .map(user -> passwordEncoder.matches(contrasenia, user.getPassword()))
                 .orElse(false);
     }
+
+    public Usuario obtenerEntidadPorCorreo(String correo) {
+    return usuarioRepository.findUsuarioByCorreo(correo).orElse(null);
+}
 }
