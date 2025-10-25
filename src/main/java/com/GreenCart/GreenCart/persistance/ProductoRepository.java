@@ -3,7 +3,9 @@ package com.GreenCart.GreenCart.persistance;
 import com.GreenCart.GreenCart.domain.Product;
 import com.GreenCart.GreenCart.domain.repository.ProductRepository;
 import com.GreenCart.GreenCart.persistance.crud.ProductoCrudRepository;
+import com.GreenCart.GreenCart.persistance.crud.UsuarioCrudRepository;
 import com.GreenCart.GreenCart.persistance.entity.Producto;
+import com.GreenCart.GreenCart.persistance.entity.Usuario;
 import com.GreenCart.GreenCart.persistance.mapper.ProductMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -17,6 +19,11 @@ public class ProductoRepository implements ProductRepository {
 
     @Autowired
     private ProductMapper productMapper;
+
+
+
+    @Autowired
+    private UsuarioCrudRepository usuarioCrudRepository;
 
     //Funcion Actualizada
     @Override
@@ -45,14 +52,42 @@ public class ProductoRepository implements ProductRepository {
     }
 
     //Funcion Actualizada
-    @Override
+     @Override
     public Product save(Product product) {
-        Producto producto = productMapper.toProducto(product);
-        return productMapper.toProduct(productoCrudRepository.save(producto));
+        Producto producto = productMapper.toProductoCreate(product);
+
+        if (product.getVendedorId() != null) {
+            Usuario vendedor = usuarioCrudRepository.findById(product.getVendedorId())
+                .orElseThrow(() -> new RuntimeException("Vendedor no encontrado"));
+            producto.setVendedor(vendedor);
+        }
+
+        producto = productoCrudRepository.save(producto);
+        return productMapper.toProduct(producto);
     }
 
     public void delete(int idProducto) {
         productoCrudRepository.deleteById(idProducto);
     }
+    
+    @Override
+public List<Product> getByVendedor(Long vendedorId) {
+    List<Producto> productos = productoCrudRepository.findByVendedorId(vendedorId);
+    return productMapper.toProducts(productos);
+}
+
+@Override
+public Product update(Product product) {
+    Producto producto = productMapper.toProductoUpdate(product);
+
+    if (product.getVendedorId() != null) {
+        Usuario vendedor = usuarioCrudRepository.findById(product.getVendedorId())
+            .orElseThrow(() -> new RuntimeException("Vendedor no encontrado"));
+        producto.setVendedor(vendedor);
+    }
+
+    producto = productoCrudRepository.save(producto);
+    return productMapper.toProduct(producto);
+}
 
 }
