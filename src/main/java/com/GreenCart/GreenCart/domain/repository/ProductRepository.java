@@ -12,4 +12,7 @@ public interface ProductRepository {
     Optional<Product> getProduct(int productId);
     Product save(Product product);
     void delete(int productId);
+    List<Product> getByVendedor(Long vendedorId);
+    Product update(Product product);
+
 }

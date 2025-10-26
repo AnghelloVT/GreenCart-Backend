@@ -19,7 +19,10 @@ public interface ProductMapper {
             @Mapping(source = "preciounitario", target = "productPrice"),
             @Mapping(source = "cantidadStock", target = "productStock"),
             @Mapping(source = "estado", target = "active"),
-            @Mapping(source = "categoria", target = "productCategory")
+            @Mapping(source = "categoria", target = "productCategory"),
+            @Mapping(source = "vendedor.id", target = "vendedorId"),
+            @Mapping(source = "imagenproducto", target = "productImage")
+            
 
     })
     Product toProduct(Producto producto);
@@ -35,8 +38,24 @@ public interface ProductMapper {
             @Mapping(source = "productPrice", target = "preciounitario"),
             @Mapping(source = "productStock", target = "cantidadStock"),
             @Mapping(source = "active", target = "estado"),
-            @Mapping(target = "imagen", ignore = true),
-            @Mapping(target = "categoria", ignore = true)
+            @Mapping(source = "productImage", target = "imagenproducto"),
+            @Mapping(target = "categoria", ignore = true),
+             @Mapping(source = "vendedorId", target = "vendedor.id")
+             
     })
-    Producto toProducto(Product product);
+    Producto toProductoCreate(Product product);
+
+     @Mappings({
+          @Mapping(source = "productId", target = "idProducto"),
+    @Mapping(source = "productName", target = "nombre"),
+    @Mapping(source = "categoryId", target = "idCategoria"),
+    @Mapping(source = "productDescription", target = "descripcionproducto"),
+    @Mapping(source = "productPrice", target = "preciounitario"),
+    @Mapping(source = "productStock", target = "cantidadStock"),
+    @Mapping(source = "active", target = "estado"),
+    @Mapping(source = "productImage", target = "imagenproducto"),
+    @Mapping(target = "categoria", ignore = true),
+    @Mapping(source = "vendedorId", target = "vendedor.id")
+    })
+    Producto toProductoUpdate(Product product);
 }

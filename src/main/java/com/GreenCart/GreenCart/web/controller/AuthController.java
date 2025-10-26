@@ -75,7 +75,8 @@ public ResponseEntity<Map<String, String>> login(@RequestParam Map<String, Strin
 
         return ResponseEntity.ok(Map.of(
             "status", "ok",
-            "rol", rol
+                "rol", rol,
+            "id", usuario.getId().toString()
         ));
     } else {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("status", "error"));

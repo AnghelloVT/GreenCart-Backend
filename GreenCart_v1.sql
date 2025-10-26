@@ -9,10 +9,9 @@ INSERT INTO roles (nombre) VALUES ('ADMINISTRADOR');
 INSERT INTO categorias VALUES (1, 'Bolsas', 1);
 INSERT INTO categorias VALUES (2, 'Letras', 1);
 
-INSERT INTO PRODUCTOS VALUES (1, 500,'Es una bolsa', 1, 1, "CodigoImagen","Bolsa",1);
-INSERT INTO PRODUCTOS VALUES (2, 500,'Es una letra', 1, 1, "CodigoImagen","A",2);
-INSERT INTO PRODUCTOS VALUES (3, 500,'Es una letra', 1, 1, "CodigoImagen","B",2);
-INSERT INTO PRODUCTOS VALUES (4, 500,'Es una letra', 1, 1, "CodigoImagen","C",2);
+
+INSERT INTO PRODUCTOS (nombre, precio, descripcion, id_categoria, cantidad_stock, imagen_Producto, estado, vendedor_id)
+VALUES ('Bolsa', 500, 'Es una bolsa', 1, 1, 'CodigoImagen', true, 1);
 
 select * from usuario;
 select * from roles;
