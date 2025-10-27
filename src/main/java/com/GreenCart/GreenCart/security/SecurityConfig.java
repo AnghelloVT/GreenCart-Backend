@@ -14,7 +14,15 @@
                     .cors().and()
                     .csrf().disable()
                     .authorizeHttpRequests()
-                    .requestMatchers("/login", "/registro", "/productos/**", "/categorias/**",  "/uploads/**").permitAll()
+                    .requestMatchers(
+                            "/login",
+                            "/registro",
+                            "/productos/**",
+                            "/categorias/**",
+                            "/uploads/**",
+                            "/pedidos/**",
+                            "/pedidoitems/**"
+                    ).permitAll()
                     .anyRequest().authenticated()
                     .and()
                     .httpBasic().disable();
