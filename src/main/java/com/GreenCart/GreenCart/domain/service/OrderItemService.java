@@ -2,11 +2,16 @@ package com.GreenCart.GreenCart.domain.service;
 
 import com.GreenCart.GreenCart.domain.OrderItem;
 import com.GreenCart.GreenCart.domain.repository.OrderItemRepository;
+import com.GreenCart.GreenCart.persistance.crud.PedidoCrudRepository;
+import com.GreenCart.GreenCart.persistance.crud.PedidoItemCrudRepository;
 import com.GreenCart.GreenCart.persistance.crud.ProductoCrudRepository;
 import com.GreenCart.GreenCart.persistance.crud.UsuarioCrudRepository;
+import com.GreenCart.GreenCart.persistance.entity.Pedido;
+import com.GreenCart.GreenCart.persistance.entity.Pedido_Item;
 import com.GreenCart.GreenCart.persistance.entity.Producto;
 import com.GreenCart.GreenCart.persistance.entity.Usuario;
 
+import com.GreenCart.GreenCart.persistance.mapper.OrderItemMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,10 +25,19 @@ public class OrderItemService {
     private OrderItemRepository orderItemRepository;
 
     @Autowired
+    private PedidoCrudRepository pedidoRepository;
+
+    @Autowired
     private UsuarioCrudRepository usuarioRepository;
 
     @Autowired
     private ProductoCrudRepository productoRepository;
+
+    @Autowired
+    private OrderItemMapper mapper;
+
+    @Autowired
+    private PedidoItemCrudRepository pedidoItemRepository;
 
     // Listar todos los items
     public List<OrderItem> getAll() {
@@ -47,25 +61,33 @@ public class OrderItemService {
 
     // Guardar un item
     public OrderItem save(OrderItem orderItem) {
-        // Validar IDs
-        if (orderItem.getOrderId() == null) {
-            throw new IllegalArgumentException("El ID del pedido no puede ser null");
-        }
-        if (orderItem.getProductId() == null) {
-            throw new IllegalArgumentException("El ID del producto no puede ser null");
-        }
+        // Convertir DTO a entidad
+        Pedido_Item entity = mapper.toPedidoItem(orderItem);
 
-        // Traer el producto desde la DB
+        // Buscar entidades reales
+        Pedido pedido = pedidoRepository.findById(orderItem.getOrderId())
+                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
         Producto producto = productoRepository.findById(orderItem.getProductId())
-                .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado con ID: " + orderItem.getProductId()));
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+        Usuario usuario = usuarioRepository.findById(Long.valueOf(orderItem.getSellerId()))
+                .orElseThrow(() -> new RuntimeException("Vendedor no encontrado"));
 
-        // Asignar vendedor automáticamente desde el producto
-        if (producto.getVendedor() == null) {
-            throw new IllegalArgumentException("El producto no tiene vendedor asignado");
-        }
-        orderItem.setSellerId(producto.getVendedor().getId().intValue());
+        // Asignar relaciones
+        entity.setPedido(pedido);
+        entity.setProducto(producto);
+        entity.setUsuario(usuario);
+        System.out.println("Guardando item con datos: "
+                + entity.getCantidad() + ", "
+                + entity.getPrecioUnitario() + ", "
+                + entity.getTotal() + ", Pedido: "
+                + entity.getPedido().getIdPedido() + ", Producto: "
+                + entity.getProducto().getIdProducto() + ", Usuario: "
+                + entity.getUsuario().getId());
+        // Guardar
+        Pedido_Item saved = pedidoItemRepository.save(entity);
 
-        return orderItemRepository.save(orderItem);
+        // Convertir de nuevo a DTO para devolver
+        return mapper.toOrderItem(saved);
     }
 
     // Eliminar un item (opcional)
