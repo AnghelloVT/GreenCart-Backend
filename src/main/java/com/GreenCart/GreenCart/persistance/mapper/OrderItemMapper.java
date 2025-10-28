@@ -11,24 +11,27 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface OrderItemMapper {
 
-    @Mappings({
-            @Mapping(source = "idItem", target = "itemId"),
-            @Mapping(source = "pedido.idPedido", target = "orderId"),
-            @Mapping(source = "producto.idProducto", target = "productId"),
-            @Mapping(source = "usuario.id", target = "sellerId"),
-            @Mapping(source = "cantidad", target = "quantity"),
-            @Mapping(source = "precioUnitario", target = "unitPrice"),
-            @Mapping(source = "total", target = "total"),
-            @Mapping(source = "estado", target = "status")
-    })
+    // Entity -> DTO
+    @Mapping(target = "itemId", source = "idItem")
+    @Mapping(target = "orderId", source = "pedido.idPedido")
+    @Mapping(target = "productId", source = "producto.idProducto")
+    @Mapping(target = "sellerId", source = "usuario.id")
+    @Mapping(target = "quantity", source = "cantidad")
+    @Mapping(target = "unitPrice", source = "precioUnitario")
+    @Mapping(target = "total", source = "total")
+    @Mapping(target = "status", source = "estado")
     OrderItem toOrderItem(Pedido_Item pedidoItem);
 
     List<OrderItem> toOrderItems(List<Pedido_Item> items);
 
-    @InheritInverseConfiguration
-    @Mapping(target = "pedido", ignore = true)
-    @Mapping(target = "producto", ignore = true)
-    @Mapping(target = "usuario", ignore = true)
+    // DTO -> Entity
+    @Mapping(target = "idItem", source = "itemId")
+    @Mapping(target = "cantidad", source = "quantity")
+    @Mapping(target = "precioUnitario", source = "unitPrice")
+    @Mapping(target = "total", source = "total")
+    @Mapping(target = "estado", source = "status")
+    @Mapping(target = "pedido", ignore = true)   // se asigna manualmente en repository
+    @Mapping(target = "producto", ignore = true) // se asigna manualmente en repository
+    @Mapping(target = "usuario", ignore = true)  // se asigna manualmente en repository
     Pedido_Item toPedidoItem(OrderItem orderItem);
-
 }

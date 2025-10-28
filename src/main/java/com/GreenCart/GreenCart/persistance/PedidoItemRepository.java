@@ -2,8 +2,13 @@ package com.GreenCart.GreenCart.persistance;
 
 import com.GreenCart.GreenCart.domain.OrderItem;
 import com.GreenCart.GreenCart.domain.repository.OrderItemRepository;
+import com.GreenCart.GreenCart.persistance.crud.PedidoCrudRepository;
 import com.GreenCart.GreenCart.persistance.crud.PedidoItemCrudRepository;
+import com.GreenCart.GreenCart.persistance.crud.ProductoCrudRepository;
+import com.GreenCart.GreenCart.persistance.entity.Pedido;
 import com.GreenCart.GreenCart.persistance.entity.Pedido_Item;
+import com.GreenCart.GreenCart.persistance.entity.Producto;
+import com.GreenCart.GreenCart.persistance.entity.Usuario;
 import com.GreenCart.GreenCart.persistance.mapper.OrderItemMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -12,11 +17,18 @@ import java.util.Optional;
 
 @Repository
 public class PedidoItemRepository implements OrderItemRepository {
+
     @Autowired
     private PedidoItemCrudRepository pedidoItemCrudRepository;
 
     @Autowired
     private OrderItemMapper mapper;
+
+    @Autowired
+    private PedidoCrudRepository pedidoCrudRepository;
+
+    @Autowired
+    private ProductoCrudRepository productoCrudRepository;
 
     @Override
     public List<OrderItem> getAll() {
@@ -27,7 +39,7 @@ public class PedidoItemRepository implements OrderItemRepository {
     @Override
     public Optional<OrderItem> getOrderItem(Integer orderItemId) {
         return pedidoItemCrudRepository.findById(orderItemId)
-                .map(item -> mapper.toOrderItem(item));
+                .map(mapper::toOrderItem);
     }
 
     @Override
@@ -38,7 +50,25 @@ public class PedidoItemRepository implements OrderItemRepository {
     @Override
     public OrderItem save(OrderItem orderItem) {
         Pedido_Item item = mapper.toPedidoItem(orderItem);
-        return mapper.toOrderItem(pedidoItemCrudRepository.save(item));
+
+        // Traer pedido y producto desde la DB
+        Pedido pedido = pedidoCrudRepository.findById(orderItem.getOrderId())
+                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+        Producto producto = productoCrudRepository.findById(orderItem.getProductId())
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+        // Asignar automáticamente el vendedor del producto
+        Usuario vendedor = producto.getVendedor();
+        if (vendedor == null) {
+            throw new RuntimeException("El producto no tiene vendedor asignado");
+        }
+
+        item.setPedido(pedido);
+        item.setProducto(producto);
+        item.setUsuario(vendedor); // asigna el vendedor automáticamente
+
+        Pedido_Item savedItem = pedidoItemCrudRepository.save(item);
+        return mapper.toOrderItem(savedItem);
     }
 
     @Override

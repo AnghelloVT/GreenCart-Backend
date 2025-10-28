@@ -2,7 +2,9 @@ package com.GreenCart.GreenCart.domain.service;
 
 
 import com.GreenCart.GreenCart.domain.Order;
+import com.GreenCart.GreenCart.domain.repository.OrderItemRepository;
 import com.GreenCart.GreenCart.domain.repository.OrderRepository;
+import com.GreenCart.GreenCart.persistance.crud.ProductoCrudRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -10,6 +12,13 @@ import java.util.Optional;
 
 @Service
 public class OrderService {
+
+    @Autowired
+    private OrderItemRepository orderItemRepository;
+
+    @Autowired
+    private ProductoCrudRepository productoRepository;
+
     @Autowired
     private OrderRepository orderRepository;
 

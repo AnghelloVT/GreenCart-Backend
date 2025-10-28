@@ -4,6 +4,7 @@ import com.GreenCart.GreenCart.domain.Order;
 import com.GreenCart.GreenCart.domain.repository.OrderRepository;
 import com.GreenCart.GreenCart.persistance.crud.PedidoCrudRepository;
 import com.GreenCart.GreenCart.persistance.entity.Pedido;
+import com.GreenCart.GreenCart.persistance.entity.Usuario;
 import com.GreenCart.GreenCart.persistance.mapper.OrderMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -38,7 +39,16 @@ public class PedidoRepository implements OrderRepository{
     @Override
     public Order save(Order order) {
         Pedido pedido = mapper.toPedido(order);
-        return mapper.toOrder(pedidoCrudRepository.save(pedido));
+
+        // Asignar usuario manualmente
+        if (order.getBuyerId() != null) {
+            Usuario usuario = new Usuario();
+            usuario.setId(Long.valueOf(order.getBuyerId()));
+            pedido.setUsuario(usuario);
+        }
+
+        Pedido saved = pedidoCrudRepository.save(pedido);
+        return mapper.toOrder(saved);
     }
 
     @Override

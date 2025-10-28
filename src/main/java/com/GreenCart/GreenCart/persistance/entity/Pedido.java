@@ -29,6 +29,13 @@ public class Pedido {
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Pedido_Item> items;
 
+    @PrePersist
+    public void prePersist() {
+        if (fecha == null) {
+            fecha = LocalDateTime.now();
+        }
+    }
+
     public Integer getIdPedido() {
         return idPedido;
     }
