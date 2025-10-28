@@ -57,28 +57,33 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-public ResponseEntity<Map<String, String>> login(@RequestParam Map<String, String> body) {
-    String correo = body.get("correo");
-    String contrasenia = body.get("contraseña");
+    public ResponseEntity<Map<String, String>> login(@RequestParam Map<String, String> body) {
+        String correo = body.get("correo");
+        String contrasenia = body.get("contraseña");
 
-    if (usuarioService.validarCredenciales(correo, contrasenia)) {
-        Usuario usuario = usuarioService.obtenerEntidadPorCorreo(correo);
-        if (usuario == null || usuario.getRol().isEmpty()) {
+        if (usuarioService.validarCredenciales(correo, contrasenia)) {
+            Usuario usuario = usuarioService.obtenerEntidadPorCorreo(correo);
+            if (usuario == null || usuario.getRol().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("status", "error"));
+            }
+
+            String rol = usuario.getRol().stream()
+                    .findFirst()
+                    .map(r -> r.getNombre().toLowerCase()) // "administrador", "vendedor", "comprador"
+                    .orElse("comprador");
+            return ResponseEntity.ok(Map.of(
+                    "status", "ok",
+                    "rol", rol,
+                    "id", usuario.getId().toString(),
+                    "nombre", usuario.getNombre(),
+                    "apellidos", usuario.getApellidos(),
+                    "correo", usuario.getCorreo(),
+                    "dni", usuario.getDni(),
+                    "direccion", usuario.getDireccion(),
+                    "telefono", usuario.getTelefono()
+            ));
+        } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("status", "error"));
         }
-
-       
-        String rol = usuario.getRol().stream()
-                .findFirst()
-                .map(r -> r.getNombre().toLowerCase())
-                .orElse("comprador");
-
-        return ResponseEntity.ok(Map.of(
-            "status", "ok",
-            "rol", rol
-        ));
-    } else {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("status", "error"));
     }
-}
 }

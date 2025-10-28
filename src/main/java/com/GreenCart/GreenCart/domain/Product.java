@@ -9,6 +9,8 @@ public class Product {
     private int productStock;
     private boolean active;
     private Category productCategory;
+    private Long vendedorId;
+    private String productImage;
 
     public int getCategoryId() {
         return categoryId;
@@ -45,6 +47,17 @@ public class Product {
     public double getProductPrice() {
         return productPrice;
     }
+      public Long getVendedorId() { return vendedorId; }
+    public void setVendedorId(Long vendedorId) { this.vendedorId = vendedorId; }
+
+    public String getProductImage() {
+        return productImage;
+    }
+
+    public void setProductImage(String productImage) {
+        this.productImage = productImage;
+    }
+
 
     public void setProductPrice(double productPrice) {
         this.productPrice = productPrice;

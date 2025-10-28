@@ -3,9 +3,13 @@
     import com.GreenCart.GreenCart.domain.Product;
     import com.GreenCart.GreenCart.domain.service.ProductService;
     import org.springframework.beans.factory.annotation.Autowired;
-    import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-    import java.util.List;
+import java.io.IOException;
+
+import java.util.List;
     import java.util.Optional;
 
     @RestController
@@ -23,6 +27,11 @@
         public Optional<Product> getProduct(@PathVariable("id") int productId) {
             return productService.getProduct(productId);
         }
+        
+        @GetMapping("/vendedor/{vendedorId}")
+public List<Product> getByVendedor(@PathVariable Long vendedorId) {
+    return productService.getByVendedor(vendedorId);
+}
 
         @GetMapping("/category/{categoryId}")
         public Optional<List<Product>> getByCategory(@PathVariable("categoryId") int categoryId) {
@@ -30,12 +39,26 @@
         }
 
         @PostMapping("/save")
-        public Product save(@RequestBody Product product) {
-            return productService.save(product);
-        }
+public Product save(@RequestPart("product") Product product,
+                    @RequestPart("image") MultipartFile file) throws IOException {
+    return productService.save(product, file);
+}
 
         @DeleteMapping("/delete/{id}")
         public boolean delete(@PathVariable("id") int productId) {
             return productService.delete(productId);
         }
+
+        @PutMapping(value = "/update/{id}", consumes = {"multipart/form-data"})
+public ResponseEntity<Product> updateProduct(
+        @PathVariable int id,
+        @ModelAttribute Product product, 
+        @RequestPart(value = "file", required = false) MultipartFile file
+) throws IOException {
+
+    product.setProductId(id); 
+    Product updated = productService.update(product, file);
+    return ResponseEntity.ok(updated);
+}
+
     }

@@ -10,8 +10,7 @@ public class Producto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_producto")
 
-    private Integer  idProducto;
-
+    private Integer idProducto;
 
     private String nombre;
 
@@ -27,15 +26,28 @@ public class Producto {
     @Column(name = "cantidad_stock")
     private Integer cantidadStock;
 
-    private String imagen;
+    @Column(name = "imagen_Producto")
+    private String imagenproducto;
 
     private Boolean estado;
 
     @ManyToOne
     @JoinColumn(name = "id_categoria", insertable = false, updatable = false)
     private Categoria categoria;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "vendedor_id") 
+    private Usuario vendedor;
 
-    //GETTER AND SETTERS
+public Usuario getVendedor() {
+    return vendedor;
+}
+
+public void setVendedor(Usuario vendedor) {
+    this.vendedor = vendedor;
+}
+
+    
     public Categoria getCategoria() {
         return categoria;
     }
@@ -44,12 +56,12 @@ public class Producto {
         this.categoria = categoria;
     }
 
-    public String getImagen() {
-        return imagen;
+    public String getImagenproducto() {
+    return imagenproducto;
     }
 
-    public void setImagen(String imagen) {
-        this.imagen = imagen;
+    public void setImagenproducto(String imagenproducto) {
+    this.imagenproducto = imagenproducto;
     }
 
     public Double getPreciounitario() {
