@@ -3,12 +3,14 @@ package com.GreenCart.GreenCart.domain.service;
 import com.GreenCart.GreenCart.domain.User;
 import com.GreenCart.GreenCart.domain.repository.RoleRepository;
 import com.GreenCart.GreenCart.persistance.UsuarioRepository;
+import com.GreenCart.GreenCart.domain.repository.UserRepository;
 import com.GreenCart.GreenCart.persistance.entity.Usuario;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.Optional;
 
 @Service
 public class UsuarioService {
@@ -45,5 +47,8 @@ public class UsuarioService {
 
     public Usuario obtenerEntidadPorCorreo(String correo) {
     return usuarioRepository.findUsuarioByCorreo(correo).orElse(null);
-}
+    }
+    public User getUserById(Long id) {
+        return usuarioRepository.findUserById(id).orElse(null);
+    }
 }

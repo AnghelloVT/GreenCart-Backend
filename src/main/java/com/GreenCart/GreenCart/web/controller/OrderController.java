@@ -2,16 +2,23 @@ package com.GreenCart.GreenCart.web.controller;
 
 import com.GreenCart.GreenCart.domain.Order;
 import com.GreenCart.GreenCart.domain.service.OrderService;
+import com.GreenCart.GreenCart.domain.service.PDFService;
+import com.GreenCart.GreenCart.domain.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Optional;
+import com.GreenCart.GreenCart.domain.User;
 
 @RestController
 @RequestMapping("/pedidos")
 public class OrderController {
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private UsuarioService usuarioService;
 
     //Listar todos los pedidos
     @GetMapping("/all")
@@ -53,6 +60,31 @@ public class OrderController {
         return deleted
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();
+    }
+
+    // Generar PDF del pedido por ID
+    @GetMapping("/{id}/pdf")
+    public ResponseEntity<byte[]> generarPDF(@PathVariable int id) {
+        Optional<Order> optionalOrder = orderService.getOrder(id);
+        if (optionalOrder.isEmpty()) return ResponseEntity.notFound().build();
+
+        Order order = optionalOrder.get();
+
+        // Obtener información del comprador
+        User buyer = null;
+        if (order.getBuyerId() != null) {
+            buyer = usuarioService.getUserById(order.getBuyerId().longValue());
+            // Ajusta esto según cómo obtienes el usuario
+        }
+
+        byte[] pdf = PDFService.generateOrderPDF(order, buyer);
+        if (pdf == null) return ResponseEntity.internalServerError().build();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("filename", "Pedido_" + id + ".pdf");
+
+        return ResponseEntity.ok().headers(headers).body(pdf);
     }
 
 }
