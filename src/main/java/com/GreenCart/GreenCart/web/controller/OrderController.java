@@ -5,6 +5,8 @@ import com.GreenCart.GreenCart.domain.service.OrderService;
 import com.GreenCart.GreenCart.domain.service.PDFService;
 import com.GreenCart.GreenCart.domain.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -87,4 +89,10 @@ public class OrderController {
         return ResponseEntity.ok().headers(headers).body(pdf);
     }
 
+    // Listar pedidos del usuario logeado
+    @GetMapping("/mis-pedidos/{idUsuario}")
+    public ResponseEntity<List<Order>> getPedidosPorUsuario(@PathVariable("idUsuario") int idUsuario) {
+        List<Order> orders = orderService.getByBuyer(idUsuario);
+        return orders.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(orders);
+    }
 }
