@@ -11,6 +11,8 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import com.GreenCart.GreenCart.domain.User;
 
 @RestController
@@ -88,7 +90,16 @@ public class OrderController {
 
         return ResponseEntity.ok().headers(headers).body(pdf);
     }
+    @GetMapping("/vendedor/pedidos/{sellerId}")
+    public ResponseEntity<List<Order>> obtenerPedidosPorVendedor(@PathVariable Integer sellerId) {
+        List<Order> orders = orderService.getAll().stream()
+                .filter(order -> order.getItems() != null &&
+                        order.getItems().stream()
+                                .anyMatch(item -> item.getSellerId() != null && item.getSellerId().equals(sellerId)))
+                .collect(Collectors.toList());
 
+        return orders.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(orders);
+    }
     // Listar pedidos del usuario logeado
     @GetMapping("/mis-pedidos/{idUsuario}")
     public ResponseEntity<List<Order>> getPedidosPorUsuario(@PathVariable("idUsuario") int idUsuario) {
