@@ -15,6 +15,7 @@ public interface OrderItemMapper {
     @Mapping(target = "itemId", source = "idItem")
     @Mapping(target = "orderId", source = "pedido.idPedido")
     @Mapping(target = "productId", source = "producto.idProducto")
+    @Mapping(target = "productName", source = "producto.nombre")
     @Mapping(target = "sellerId", source = "usuario.id")
     @Mapping(target = "quantity", source = "cantidad")
     @Mapping(target = "unitPrice", source = "precioUnitario")
