@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/pedidoitems")
@@ -64,5 +65,18 @@ public class OrderItemController {
         return deleted
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();
+    }
+
+    @PutMapping("/{itemId}/status")
+    public ResponseEntity<?> updateStatus(
+            @PathVariable int itemId,
+            @RequestBody Map<String, String> body
+    ) {
+        String newStatus = body.get("status"); // obtiene "EN_PROCESO"
+        boolean updated = orderItemService.updateStatus(itemId, newStatus);
+
+        return updated
+                ? ResponseEntity.ok("Estado actualizado")
+                : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Item no encontrado");
     }
 }

@@ -11,4 +11,6 @@ public interface OrderItemRepository {
     List<OrderItem> getBySeller(Integer sellerId);
     OrderItem save(OrderItem orderItem);
     void delete(Integer orderItemId);
+    // NUEVO → actualizar estado
+    boolean updateStatus(Integer itemId, String newStatus);
 }

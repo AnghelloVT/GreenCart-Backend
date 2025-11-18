@@ -99,4 +99,8 @@ public class OrderItemService {
                 })
                 .orElse(false);
     }
+
+    public boolean updateStatus(int itemId, String status) {
+        return orderItemRepository.updateStatus(itemId, status);
+    }
 }
