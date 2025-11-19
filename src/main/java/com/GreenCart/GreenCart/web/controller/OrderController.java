@@ -4,6 +4,8 @@ import com.GreenCart.GreenCart.domain.Order;
 import com.GreenCart.GreenCart.domain.service.OrderService;
 import com.GreenCart.GreenCart.domain.service.PDFService;
 import com.GreenCart.GreenCart.domain.service.UsuarioService;
+import com.GreenCart.GreenCart.persistance.crud.PedidoCrudRepository;
+import com.GreenCart.GreenCart.persistance.entity.Pedido;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,6 +25,9 @@ public class OrderController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private PedidoCrudRepository pedidoRepository;
 
     //Listar todos los pedidos
     @GetMapping("/all")
@@ -90,20 +95,51 @@ public class OrderController {
 
         return ResponseEntity.ok().headers(headers).body(pdf);
     }
-    @GetMapping("/vendedor/pedidos/{sellerId}")
-    public ResponseEntity<List<Order>> obtenerPedidosPorVendedor(@PathVariable Integer sellerId) {
-        List<Order> orders = orderService.getAll().stream()
-                .filter(order -> order.getItems() != null &&
-                        order.getItems().stream()
-                                .anyMatch(item -> item.getSellerId() != null && item.getSellerId().equals(sellerId)))
-                .collect(Collectors.toList());
 
-        return orders.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(orders);
+    @GetMapping("/seller/{sellerId}")
+    public ResponseEntity<List<Order>> getBySeller(@PathVariable("sellerId") int sellerId) {
+        List<Order> orders = orderService.getOrdersBySeller(sellerId);
+        return orders.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(orders);
     }
+
     // Listar pedidos del usuario logeado
     @GetMapping("/mis-pedidos/{idUsuario}")
     public ResponseEntity<List<Order>> getPedidosPorUsuario(@PathVariable("idUsuario") int idUsuario) {
         List<Order> orders = orderService.getByBuyer(idUsuario);
         return orders.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(orders);
+    }
+
+    // Cancelar pedido (solo si está PENDIENTE)
+    @PostMapping("/{id}/cancelar")
+    public ResponseEntity<String> cancelarPedido(@PathVariable Integer id) {
+        Pedido pedido = pedidoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+
+        if (pedido.getEstado() != Pedido.EstadoPedido.PENDIENTE) {
+            return ResponseEntity.badRequest().body("Solo se pueden cancelar pedidos pendientes");
+        }
+
+        pedido.setEstado(Pedido.EstadoPedido.CANCELADO);
+        pedidoRepository.save(pedido);
+
+        return ResponseEntity.ok("Pedido cancelado correctamente");
+    }
+
+    // Marcar pedido como ENTREGADO (solo si está EN_PROCESO)
+    @PostMapping("/{id}/entregar")
+    public ResponseEntity<String> entregarPedido(@PathVariable Integer id) {
+        Pedido pedido = pedidoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+
+        if (pedido.getEstado() != Pedido.EstadoPedido.EN_PROCESO) {
+            return ResponseEntity.badRequest().body("Solo se pueden marcar como entregados los pedidos en proceso");
+        }
+
+        pedido.setEstado(Pedido.EstadoPedido.ENTREGADO);
+        pedidoRepository.save(pedido);
+
+        return ResponseEntity.ok("Pedido marcado como entregado");
     }
 }

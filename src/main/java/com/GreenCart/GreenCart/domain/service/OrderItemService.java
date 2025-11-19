@@ -100,7 +100,30 @@ public class OrderItemService {
                 .orElse(false);
     }
 
+    // Actualizar estado de un item y del pedido si todos los items están en EN_PROCESO
     public boolean updateStatus(int itemId, String status) {
-        return orderItemRepository.updateStatus(itemId, status);
+        Optional<Pedido_Item> optionalItem = pedidoItemRepository.findById(itemId);
+
+        if (optionalItem.isPresent()) {
+            Pedido_Item item = optionalItem.get();
+
+            // Actualizar estado del item
+            item.setEstado(Pedido_Item.EstadoItem.valueOf(status));
+            pedidoItemRepository.save(item);
+
+            // Verificar si todos los items del pedido están en EN_PROCESO
+            Pedido pedido = item.getPedido();
+            boolean todosEnProceso = pedido.getItems().stream()
+                    .allMatch(i -> i.getEstado() == Pedido_Item.EstadoItem.EN_PROCESO);
+
+            if (todosEnProceso && pedido.getEstado() == Pedido.EstadoPedido.PENDIENTE) {
+                pedido.setEstado(Pedido.EstadoPedido.EN_PROCESO);
+                pedidoRepository.save(pedido);
+            }
+
+            return true;
+        }
+
+        return false;
     }
 }

@@ -51,4 +51,29 @@ public class OrderService {
                 })
                 .orElse(false);
     }
+
+    //busca TODAS las órdenes, pero filtra solo los items del vendedor
+    public List<Order> getOrdersBySeller(Integer sellerId) {
+        List<Order> allOrders = orderRepository.getAll();
+
+        return allOrders.stream()
+                .map(order -> {
+
+                    // Filtrar SOLO los items del vendedor
+                    var filteredItems = order.getItems().stream()
+                            .filter(item -> item.getSellerId() == sellerId)
+                            .toList();
+
+                    if (filteredItems.isEmpty()) {
+                        return null; // esta orden NO pertenece al vendedor
+                    }
+
+                    // Remplazar los items por los filtrados
+                    order.setItems(filteredItems);
+
+                    return order;
+                })
+                .filter(o -> o != null)
+                .toList();
+    }
 }
