@@ -80,4 +80,14 @@ public class PedidoItemRepository implements OrderItemRepository {
     public void delete(Integer orderItemId) {
         pedidoItemCrudRepository.deleteById(orderItemId);
     }
+
+    @Override
+    public boolean updateStatus(Integer itemId, String newStatus) {
+        return pedidoItemCrudRepository.findById(itemId).map(entity -> {
+            // Convierte el String a Enum y actualiza
+            entity.setEstado(Pedido_Item.EstadoItem.valueOf(newStatus));
+            pedidoItemCrudRepository.save(entity);
+            return true;
+        }).orElse(false);
+    }
 }

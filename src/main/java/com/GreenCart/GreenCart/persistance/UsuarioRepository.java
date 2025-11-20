@@ -28,6 +28,10 @@ public class UsuarioRepository {
         return userRepository.findByCorreo(correo)
                 .map(mapper::toUser); 
     }
+    public Optional<User> findUserById(Long id) {
+        return userRepository.findById(id)
+                .map(mapper::toUser);
+    }
 
     public boolean existsByCorreo(String correo) {
         return userRepository.existsByCorreo(correo);

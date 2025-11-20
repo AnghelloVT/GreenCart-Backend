@@ -4,6 +4,7 @@ public class OrderItem {
     private Integer itemId;
     private Integer orderId;
     private Integer productId;
+    private String productName;
     private Integer sellerId;
     private Integer quantity;
     private Double unitPrice;
@@ -72,5 +73,13 @@ public class OrderItem {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 }
