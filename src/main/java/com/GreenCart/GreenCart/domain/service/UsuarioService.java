@@ -10,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -54,5 +55,29 @@ public class UsuarioService {
 
     public User getUserByCorreo(String correo) {
         return usuarioRepository.findByCorreo(correo).orElse(null);
+    }
+
+    public List<Usuario> obtenerTodos() {
+        return usuarioRepository.findAllUsuarios();
+    }
+
+    public void eliminarUsuario(Long id) {
+        usuarioRepository.deleteById(id);
+    }
+
+    public User editarUsuario(User userEditado) {
+
+        User original = usuarioRepository.findUserById(userEditado.getId())
+                .orElse(null);
+        if (original == null) return null;
+
+        original.setFirstName(userEditado.getFirstName());
+        original.setLastName(userEditado.getLastName());
+        original.setEmail(userEditado.getEmail());
+        original.setPhone(userEditado.getPhone());
+        original.setAddress(userEditado.getAddress());
+        original.setDni(userEditado.getDni());
+
+        return usuarioRepository.update(original);
     }
 }
