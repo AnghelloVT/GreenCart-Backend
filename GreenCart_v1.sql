@@ -5,14 +5,13 @@ use GreenCartSecurity;
 /*Solo ingresar los roles y categorias*/
 INSERT INTO roles (nombre) VALUES ('VENDEDOR');
 INSERT INTO roles (nombre) VALUES ('COMPRADOR');
-INSERT INTO roles (nombre) VALUES ('ADMINISTRADOR');
 
-INSERT INTO categorias VALUES (1, 'Bolsas', 1);
-INSERT INTO categorias VALUES (2, 'Letras', 1);
-
-/*Por el momento no ingresar esto     */
-INSERT INTO PRODUCTOS (nombre, precio, descripcion, id_categoria, cantidad_stock, imagen_Producto, estado, vendedor_id)
-VALUES ('Bolsa', 500, 'Es una bolsa', 1, 1, 'CodigoImagen', true, 1);
+INSERT INTO categorias (id_categoria, descripcion, estado) VALUES
+(6, 'Bolsas Reutilizables', 1),
+(7, 'Artículos Compostables', 1),
+(3, 'Limpieza Ecológica', 1),
+(4, 'Productos de Higiene Natural', 1),
+(5, 'Accesorios Eco-Amigables', 1);
 
 select * from usuario;
 select * from roles;
@@ -20,3 +19,4 @@ select * from usuario_rol;
 select * from productos;
 select * from pedido;
 select * from pedido_item;
+select * from reclamos;
