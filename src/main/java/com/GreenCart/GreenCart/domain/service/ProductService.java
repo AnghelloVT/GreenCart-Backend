@@ -86,4 +86,7 @@ public Product update(Product product, MultipartFile file) throws IOException {
         return productRepository.update(product);
     }).orElse(product);
 }
+    public Product updateStock(Product product) {
+        return productRepository.updateProductStock(product);
+    }
 }

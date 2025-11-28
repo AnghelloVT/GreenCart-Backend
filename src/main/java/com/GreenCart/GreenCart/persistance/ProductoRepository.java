@@ -90,4 +90,24 @@ public Product update(Product product) {
     return productMapper.toProduct(producto);
 }
 
+    @Override
+    public Product updateProductStock(Product product) {
+
+        Optional<Producto> opt = productoCrudRepository.findById(product.getProductId());
+
+        if (opt.isEmpty()) {
+            return null;
+        }
+
+        Producto entity = opt.get();
+
+        // actualizar el stock
+        entity.setCantidadStock(product.getProductStock());
+
+        // guardar en BD
+        entity = productoCrudRepository.save(entity);
+
+        return productMapper.toProduct(entity);
+    }
+
 }

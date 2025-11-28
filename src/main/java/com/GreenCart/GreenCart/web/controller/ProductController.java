@@ -60,5 +60,11 @@ public ResponseEntity<Product> updateProduct(
     Product updated = productService.update(product, file);
     return ResponseEntity.ok(updated);
 }
+        @PostMapping("/actualizar-stock/{id}")
+        public ResponseEntity<Product> actualizarStock(@PathVariable int id, @RequestBody Product product){
+            product.setProductId(id);
+            return ResponseEntity.ok(productService.updateStock(product));
+        }
+
 
     }

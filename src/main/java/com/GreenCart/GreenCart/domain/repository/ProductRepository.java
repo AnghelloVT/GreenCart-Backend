@@ -14,5 +14,6 @@ public interface ProductRepository {
     void delete(int productId);
     List<Product> getByVendedor(Long vendedorId);
     Product update(Product product);
+    Product updateProductStock(Product product);
 
 }
