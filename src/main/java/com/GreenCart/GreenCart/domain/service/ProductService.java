@@ -1,21 +1,16 @@
 package com.GreenCart.GreenCart.domain.service;
-
-import org.springframework.web.multipart.MultipartFile;
-
 import com.GreenCart.GreenCart.domain.Product;
 import com.GreenCart.GreenCart.domain.repository.ProductRepository;
-import com.GreenCart.GreenCart.persistance.entity.Producto;
-import com.GreenCart.GreenCart.persistance.mapper.ProductMapper;
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
+import com.GreenCart.GreenCart.domain.service.FileStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -25,12 +20,8 @@ public class ProductService {
     private ProductRepository productRepository;
 
     @Autowired
-    private ProductMapper mapper;
+    private FileStorageService fileStorageService;
 
-    @Autowired
-    private Cloudinary cloudinary;
-
-    // ✔ Obtener todos (Product DTO)
     public List<Product> getAll() {
         return productRepository.getAll();
     }
@@ -43,48 +34,53 @@ public class ProductService {
         return productRepository.getByCategory(categoryId);
     }
 
-    //CREAR PRODUCTO
-    public Product save(Product productDto, MultipartFile file) throws IOException {
-
-        if (file != null && !file.isEmpty()) {
-            Map uploadResult = cloudinary.uploader().upload(
-                    file.getBytes(),
-                    ObjectUtils.asMap("folder", "greencart")
-            );
-            productDto.setProductImage(uploadResult.get("secure_url").toString());
+    // Cambio aquí: Acepta URL de imagen en lugar de archivo
+    public Product save(Product product, String imageUrl) throws IOException {
+        // Si se recibe una URL, se asigna directamente
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            product.setProductImage(imageUrl);
+        } else {
+            throw new IllegalArgumentException("URL de la imagen no proporcionada");
         }
-
-        Producto entity = mapper.toProductoCreate(productDto);
-
-        // Guardar entidad en BD en vez de DTO
-        return productRepository.save(productDto);
+        return productRepository.save(product);
     }
 
-    //ELIMINAR
     public boolean delete(int productId) {
-        return productRepository.getProduct(productId).map(product -> {
+        return getProduct(productId).map(product -> {
+            if (product.getProductImage() != null) {
+                Path imagePath = Paths.get(fileStorageService.getUploadDir()).resolve(product.getProductImage());
+                try {
+                    Files.deleteIfExists(imagePath);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
             productRepository.delete(productId);
             return true;
         }).orElse(false);
     }
 
-    //Filtrar por vendedor
     public List<Product> getByVendedor(Long vendedorId) {
         return productRepository.getByVendedor(vendedorId);
     }
 
-    //UPDATE CON CLOUDINARY
-    public Product update(Product productDto, MultipartFile file) throws IOException {
-
-        if (file != null && !file.isEmpty()) {
-            Map uploadResult = cloudinary.uploader().upload(
-                    file.getBytes(),
-                    ObjectUtils.asMap("folder", "greencart")
-            );
-            productDto.setProductImage(uploadResult.get("secure_url").toString());
-        }
-
-        return productRepository.update(productDto);
+    public Product update(Product product, String imageUrl) throws IOException {
+        return getProduct(product.getProductId()).map(existing -> {
+            try {
+                if (imageUrl != null && !imageUrl.isEmpty()) {
+                    if (existing.getProductImage() != null) {
+                        Path oldImage = Paths.get(fileStorageService.getUploadDir()).resolve(existing.getProductImage());
+                        Files.deleteIfExists(oldImage);
+                    }
+                    product.setProductImage(imageUrl);
+                } else {
+                    product.setProductImage(existing.getProductImage());
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return productRepository.update(product);
+        }).orElse(product);
     }
 
     public Product updateStock(Product product) {

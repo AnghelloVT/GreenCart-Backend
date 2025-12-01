@@ -14,88 +14,82 @@ import java.util.Optional;
 
 @Repository
 public class ProductoRepository implements ProductRepository {
-
     @Autowired
     private ProductoCrudRepository productoCrudRepository;
 
     @Autowired
-    private UsuarioCrudRepository usuarioCrudRepository;
-
-    @Autowired
     private ProductMapper productMapper;
 
-    @Override
-    public List<Product> getAll() {
-        List<Producto> productos = (List<Producto>) productoCrudRepository.findAll();
-        return productMapper.toProducts(productos);
-    }
 
+
+    @Autowired
+    private UsuarioCrudRepository usuarioCrudRepository;
+
+    //Funcion Actualizada
+    @Override
+    public List<Product> getAll(){
+        List <Producto> productos  = (List<Producto>) productoCrudRepository.findAll();
+        return  productMapper.toProducts(productos);
+
+    }
+    //Funcion Actualizada
     @Override
     public Optional<List<Product>> getByCategory(int categoryId) {
-        List<Producto> productos = productoCrudRepository.findByIdCategoriaOrderByNombreAsc(categoryId);
-        return Optional.of(productMapper.toProducts(productos));
+        List <Producto> productos = productoCrudRepository.findByIdCategoriaOrderByNombreAsc(categoryId);
+        return Optional.of( productMapper.toProducts(productos));
     }
 
+    //Funcion Actualizada
+    @Override
     public Optional<List<Product>> getScarseProducts(int quantity) {
-        Optional<List<Producto>> productos
-                = productoCrudRepository.findByCantidadStockLessThanAndEstado(quantity, true);
-
-        return productos.map(productMapper::toProducts);
+        Optional<List<Producto>>  productos = productoCrudRepository.findByCantidadStockLessThanAndEstado(quantity, true);
+        return  productos.map(prods -> productMapper.toProducts(prods));
     }
-
+    //Funcion Actualizada
     @Override
     public Optional<Product> getProduct(int productId) {
-        return productoCrudRepository.findById(productId)
-                .map(productMapper::toProduct);
+        return productoCrudRepository.findById(productId).map(producto ->productMapper.toProduct(producto));
     }
 
-    // SAVE 
-    @Override
+    //Funcion Actualizada
+     @Override
     public Product save(Product product) {
-
-        Producto entity = productMapper.toProductoCreate(product);
+        Producto producto = productMapper.toProductoCreate(product);
 
         if (product.getVendedorId() != null) {
             Usuario vendedor = usuarioCrudRepository.findById(product.getVendedorId())
-                    .orElseThrow(() -> new RuntimeException("Vendedor no encontrado"));
-            entity.setVendedor(vendedor);
+                .orElseThrow(() -> new RuntimeException("Vendedor no encontrado"));
+            producto.setVendedor(vendedor);
         }
 
-        entity = productoCrudRepository.save(entity);
-
-        return productMapper.toProduct(entity);
+        producto = productoCrudRepository.save(producto);
+        return productMapper.toProduct(producto);
     }
 
-    @Override
     public void delete(int idProducto) {
         productoCrudRepository.deleteById(idProducto);
     }
-
-    //  Buscar por vendedor
+    
     @Override
-    public List<Product> getByVendedor(Long vendedorId) {
-        List<Producto> productos = productoCrudRepository.findByVendedorId(vendedorId);
-        return productMapper.toProducts(productos);
+public List<Product> getByVendedor(Long vendedorId) {
+    List<Producto> productos = productoCrudRepository.findByVendedorId(vendedorId);
+    return productMapper.toProducts(productos);
+}
+
+@Override
+public Product update(Product product) {
+    Producto producto = productMapper.toProductoUpdate(product);
+
+    if (product.getVendedorId() != null) {
+        Usuario vendedor = usuarioCrudRepository.findById(product.getVendedorId())
+            .orElseThrow(() -> new RuntimeException("Vendedor no encontrado"));
+        producto.setVendedor(vendedor);
     }
 
-    // UPDATE corregido
-    @Override
-    public Product update(Product product) {
+    producto = productoCrudRepository.save(producto);
+    return productMapper.toProduct(producto);
+}
 
-        Producto entity = productMapper.toProductoUpdate(product);
-
-        if (product.getVendedorId() != null) {
-            Usuario vendedor = usuarioCrudRepository.findById(product.getVendedorId())
-                    .orElseThrow(() -> new RuntimeException("Vendedor no encontrado"));
-            entity.setVendedor(vendedor);
-        }
-
-        entity = productoCrudRepository.save(entity);
-
-        return productMapper.toProduct(entity);
-    }
-
-    // UPDATE STOCK
     @Override
     public Product updateProductStock(Product product) {
 
@@ -107,10 +101,13 @@ public class ProductoRepository implements ProductRepository {
 
         Producto entity = opt.get();
 
+        // actualizar el stock
         entity.setCantidadStock(product.getProductStock());
 
+        // guardar en BD
         entity = productoCrudRepository.save(entity);
 
         return productMapper.toProduct(entity);
     }
+
 }

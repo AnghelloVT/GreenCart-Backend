@@ -1,5 +1,4 @@
 package com.GreenCart.GreenCart.web.controller;
-
 import com.GreenCart.GreenCart.domain.Product;
 import com.GreenCart.GreenCart.domain.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -25,32 +23,8 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Product> getProduct(@PathVariable("id") int id) {
-        return productService.getProduct(id);
-    }
-
-    @PostMapping("/save")
-    public Product save(
-            @RequestPart("product") Product product,
-            @RequestPart(value = "image", required = false) MultipartFile file
-    ) throws IOException {
-        return productService.save(product, file);
-    }
-
-    @PutMapping(value = "/update/{id}", consumes = {"multipart/form-data"})
-    public ResponseEntity<Product> update(
-            @PathVariable int id,
-            @ModelAttribute Product product,
-            @RequestPart(value = "image", required = false) MultipartFile file
-    ) throws IOException {
-        product.setProductId(id);
-        Product updated = productService.update(product, file);
-        return ResponseEntity.ok(updated);
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public boolean delete(@PathVariable("id") int id) {
-        return productService.delete(id);
+    public Optional<Product> getProduct(@PathVariable("id") int productId) {
+        return productService.getProduct(productId);
     }
 
     @GetMapping("/vendedor/{vendedorId}")
@@ -58,11 +32,36 @@ public class ProductController {
         return productService.getByVendedor(vendedorId);
     }
 
-    @PostMapping("/actualizar-stock/{id}")
-    public ResponseEntity<Product> actualizarStock(
+    @GetMapping("/category/{categoryId}")
+    public Optional<List<Product>> getByCategory(@PathVariable("categoryId") int categoryId) {
+        return productService.getByCategory(categoryId);
+    }
+
+    // Cambio aquí: Recibe URL en lugar de archivo
+    @PostMapping("/save")
+    public Product save(@RequestPart("product") Product product,
+                        @RequestParam(value = "imageUrl", required = false) String imageUrl) throws IOException {
+        return productService.save(product, imageUrl);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public boolean delete(@PathVariable("id") int productId) {
+        return productService.delete(productId);
+    }
+
+    @PutMapping(value = "/update/{id}", consumes = {"multipart/form-data"})
+    public ResponseEntity<Product> updateProduct(
             @PathVariable int id,
-            @RequestBody Product product
-    ) {
+            @ModelAttribute Product product,
+            @RequestParam(value = "imageUrl", required = false) String imageUrl
+    ) throws IOException {
+        product.setProductId(id);
+        Product updated = productService.update(product, imageUrl);
+        return ResponseEntity.ok(updated);
+    }
+
+    @PostMapping("/actualizar-stock/{id}")
+    public ResponseEntity<Product> actualizarStock(@PathVariable int id, @RequestBody Product product) {
         product.setProductId(id);
         return ResponseEntity.ok(productService.updateStock(product));
     }
