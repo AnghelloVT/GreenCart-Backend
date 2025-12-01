@@ -49,24 +49,20 @@ public class ProductoRepository implements ProductRepository {
                 .map(productMapper::toProduct);
     }
 
-    // SAVE corregido
+    // SAVE 
     @Override
     public Product save(Product product) {
 
-        // Convertir DTO → Entity
         Producto entity = productMapper.toProductoCreate(product);
 
-        // Asignar vendedor si corresponde
         if (product.getVendedorId() != null) {
             Usuario vendedor = usuarioCrudRepository.findById(product.getVendedorId())
                     .orElseThrow(() -> new RuntimeException("Vendedor no encontrado"));
             entity.setVendedor(vendedor);
         }
 
-        // Guardar la entidad
         entity = productoCrudRepository.save(entity);
 
-        // Devolver DTO
         return productMapper.toProduct(entity);
     }
 

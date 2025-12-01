@@ -46,19 +46,17 @@ public class ProductService {
     //CREAR PRODUCTO
     public Product save(Product productDto, MultipartFile file) throws IOException {
 
-        //subir imagen a Cloudinary
-        Map uploadResult = cloudinary.uploader().upload(
-                file.getBytes(),
-                ObjectUtils.asMap("folder", "greencart")
-        );
+        if (file != null && !file.isEmpty()) {
+            Map uploadResult = cloudinary.uploader().upload(
+                    file.getBytes(),
+                    ObjectUtils.asMap("folder", "greencart")
+            );
+            productDto.setProductImage(uploadResult.get("secure_url").toString());
+        }
 
-        String url = uploadResult.get("secure_url").toString();
-        productDto.setProductImage(url);
-
-        //Convertir DTO → Entity
         Producto entity = mapper.toProductoCreate(productDto);
 
-        //Guardar en BD
+        // Guardar entidad en BD en vez de DTO
         return productRepository.save(productDto);
     }
 
