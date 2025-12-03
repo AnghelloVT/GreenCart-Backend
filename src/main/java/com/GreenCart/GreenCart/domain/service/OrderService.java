@@ -2,7 +2,6 @@ package com.GreenCart.GreenCart.domain.service;
 
 
 import com.GreenCart.GreenCart.domain.Order;
-import com.GreenCart.GreenCart.domain.OrderItem;
 import com.GreenCart.GreenCart.domain.repository.OrderItemRepository;
 import com.GreenCart.GreenCart.domain.repository.OrderRepository;
 import com.GreenCart.GreenCart.persistance.crud.ProductoCrudRepository;
@@ -10,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
+
 @Service
 public class OrderService {
 
@@ -17,63 +17,63 @@ public class OrderService {
     private OrderItemRepository orderItemRepository;
 
     @Autowired
+    private ProductoCrudRepository productoRepository;
+
+    @Autowired
     private OrderRepository orderRepository;
 
-    // Obtener todas las órdenes
+    //Obtener todas las órdenes
     public List<Order> getAll() {
         return orderRepository.getAll();
     }
 
-    // Obtener una orden específica
+    //Obtener una orden específica
     public Optional<Order> getOrder(Integer orderId) {
         return orderRepository.getOrder(orderId);
     }
 
-    // Obtener todas las órdenes de un comprador específico
+    //Obtener todas las órdenes de un comprador específico
     public List<Order> getByBuyer(Integer buyerId) {
         return orderRepository.getByBuyer(buyerId);
     }
 
-    // Guardar o actualizar una orden y sus items
+    //Guardar o actualizar una orden
     public Order save(Order order) {
-        // 1️⃣ Guardar el pedido primero
-        Order savedOrder = orderRepository.save(order);
-
-        // 2️⃣ Guardar cada item, asignando el orderId
-        if (order.getItems() != null && !order.getItems().isEmpty()) {
-            for (OrderItem item : order.getItems()) {
-                item.setOrderId(savedOrder.getOrderId()); // asignar ID del pedido
-                orderItemRepository.save(item);
-            }
-        }
-
-        // 3️⃣ Traer el pedido actualizado con items
-        return getOrder(savedOrder.getOrderId()).orElse(savedOrder);
+        return orderRepository.save(order);
     }
 
-    // Eliminar una orden
+    //Eliminar una orden, dudo mucho que lo usemos
     public boolean delete(Integer orderId) {
         return getOrder(orderId)
-            .map(order -> {
-                orderRepository.delete(orderId);
-                return true;
-            })
-            .orElse(false);
+                .map(order -> {
+                    orderRepository.delete(orderId);
+                    return true;
+                })
+                .orElse(false);
     }
 
-    // Obtener órdenes por vendedor
+    //busca TODAS las órdenes, pero filtra solo los items del vendedor
     public List<Order> getOrdersBySeller(Integer sellerId) {
         List<Order> allOrders = orderRepository.getAll();
+
         return allOrders.stream()
-            .map(order -> {
-                var filteredItems = order.getItems().stream()
-                    .filter(item -> item.getSellerId() == sellerId)
-                    .toList();
-                if (filteredItems.isEmpty()) return null;
-                order.setItems(filteredItems);
-                return order;
-            })
-            .filter(o -> o != null)
-            .toList();
+                .map(order -> {
+
+                    // Filtrar SOLO los items del vendedor
+                    var filteredItems = order.getItems().stream()
+                            .filter(item -> item.getSellerId() == sellerId)
+                            .toList();
+
+                    if (filteredItems.isEmpty()) {
+                        return null; // esta orden NO pertenece al vendedor
+                    }
+
+                    // Remplazar los items por los filtrados
+                    order.setItems(filteredItems);
+
+                    return order;
+                })
+                .filter(o -> o != null)
+                .toList();
     }
 }
