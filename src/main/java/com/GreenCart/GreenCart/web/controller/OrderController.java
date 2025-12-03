@@ -55,12 +55,17 @@ public class OrderController {
                 : ResponseEntity.ok(orders);
     }
 
-    //Crear nuevo pedido
+    // Crear nuevo pedido con items
     @PostMapping("/save")
     public ResponseEntity<Order> save(@RequestBody Order order) {
-        Order saved = orderService.save(order);
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+        if (order.getItems() == null || order.getItems().isEmpty()) {
+            return ResponseEntity.badRequest().body(null);
+        }
+
+        Order savedOrder = orderService.save(order);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedOrder);
     }
+
 
     //Eliminar pedido por ID
     @DeleteMapping("/delete/{id}")

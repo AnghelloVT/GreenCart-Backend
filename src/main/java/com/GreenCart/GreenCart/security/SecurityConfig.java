@@ -19,8 +19,8 @@
                     .csrf().disable()
                     .authorizeHttpRequests(authorize -> authorize
                             .requestMatchers("/pedidoitems/**").permitAll()
-                            .requestMatchers("/login", "/registro", "/productos/**", "/categorias/**", "/uploads/**",
-                                    "/pedidos/**","reclamos/**","/usuarios/**","/listar").permitAll()
+                            .requestMatchers("/login", "/registro", "/productos/**", "/categorias/**",
+                                    "/pedidos/**","/reclamos/**","/usuarios/**","/listar").permitAll()
                             .anyRequest().authenticated()
                     )
                     .httpBasic().disable();
