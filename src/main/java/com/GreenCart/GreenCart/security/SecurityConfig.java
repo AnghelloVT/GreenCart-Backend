@@ -1,34 +1,48 @@
-    package com.GreenCart.GreenCart.security;
+package com.GreenCart.GreenCart.security;
 
-    import org.springframework.context.annotation.Bean;
-    import org.springframework.context.annotation.Configuration;
-    import org.springframework.http.HttpMethod;
-    import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-    import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-    import org.springframework.security.crypto.password.PasswordEncoder;
-    import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 
-    @Configuration
-    public class SecurityConfig {
+@Configuration
+public class SecurityConfig {
 
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .cors().and()
+                .csrf().disable()
+                .authorizeHttpRequests(authorize -> authorize
+                // PERMITIR SWAGGER
+                .requestMatchers(
+                        "/docs/**",
+                        "/swagger-ui.html",
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**",
+                        "/v3/api-docs.yaml",
+                        "/api-docs/**"
+                ).permitAll()
+                // PERMITIR RECURSOS ESTÁTICOS DE SWAGGER
+                .requestMatchers(
+                        "/swagger-resources/**",
+                        "/webjars/**"
+                ).permitAll()
+                .requestMatchers("/pedidoitems/**").permitAll()
+                .requestMatchers("/login", "/registro", "/productos/**", "/categorias/**",
+                        "/pedidos/**", "/reclamos/**", "/usuarios/**", "/listar").permitAll()
+                .anyRequest().authenticated()
+                )
+                .httpBasic().disable();
 
-        @Bean
-        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-            http
-                    .cors().and()
-                    .csrf().disable()
-                    .authorizeHttpRequests(authorize -> authorize
-                            .requestMatchers("/pedidoitems/**").permitAll()
-                            .requestMatchers("/login", "/registro", "/productos/**", "/categorias/**",
-                                    "/pedidos/**","/reclamos/**","/usuarios/**","/listar").permitAll()
-                            .anyRequest().authenticated()
-                    )
-                    .httpBasic().disable();
-
-            return http.build();
-        }
-        @Bean
-        public PasswordEncoder passwordEncoder() {
-            return new BCryptPasswordEncoder();
-        }
+        return http.build();
     }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+}
