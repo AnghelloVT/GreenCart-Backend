@@ -99,7 +99,7 @@ public class OrderItemService {
                 })
                 .orElse(false);
     }
-    
+
     public void cancelarItemsDelPedido(Integer idPedido) {
         List<Pedido_Item> items = pedidoItemRepository.findByPedidoIdPedido(idPedido);
         for (Pedido_Item item : items) {
@@ -120,6 +120,17 @@ public class OrderItemService {
         pedidoRepository.save(pedido);
 
         cancelarItemsDelPedido(idPedido);
+    }
+
+    // método para actualizar todos los items a un estado
+    public void marcarItemsComoEstado(Pedido pedido, Pedido_Item.EstadoItem nuevoEstado) {
+        List<Pedido_Item> items = pedido.getItems();
+        if (items != null && !items.isEmpty()) {
+            for (Pedido_Item item : items) {
+                item.setEstado(nuevoEstado);
+            }
+            pedidoItemRepository.saveAll(items);
+        }
     }
 
     // Actualizar estado de un item y del pedido si todos los items están en EN_PROCESO

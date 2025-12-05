@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 import com.GreenCart.GreenCart.domain.User;
 import com.GreenCart.GreenCart.domain.service.OrderItemService;
+import com.GreenCart.GreenCart.persistance.entity.Pedido_Item;
 
 @RestController
 @RequestMapping("/pedidos")
@@ -30,10 +31,10 @@ public class OrderController {
 
     @Autowired
     private PedidoCrudRepository pedidoRepository;
-    
+
     @Autowired
-    private  OrderItemService orderItemService;
-            
+    private OrderItemService orderItemService;
+
     //Listar todos los pedidos
     @GetMapping("/all")
     public ResponseEntity<List<Order>> getAll() {
@@ -130,7 +131,6 @@ public class OrderController {
         }
     }
 
-    // Marcar pedido como ENTREGADO (solo si está EN_PROCESO)
     @PostMapping("/{id}/entregar")
     public ResponseEntity<String> entregarPedido(@PathVariable Integer id) {
         Pedido pedido = pedidoRepository.findById(id)
@@ -140,9 +140,14 @@ public class OrderController {
             return ResponseEntity.badRequest().body("Solo se pueden marcar como entregados los pedidos en proceso");
         }
 
+        // Actualizar estado del pedido
         pedido.setEstado(Pedido.EstadoPedido.ENTREGADO);
         pedidoRepository.save(pedido);
 
+        // 🔹 Actualizar estado de los items
+        orderItemService.marcarItemsComoEstado(pedido, Pedido_Item.EstadoItem.ENTREGADO);
+
         return ResponseEntity.ok("Pedido marcado como entregado");
     }
+
 }
