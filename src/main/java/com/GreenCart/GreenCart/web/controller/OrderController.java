@@ -16,10 +16,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.GreenCart.GreenCart.domain.User;
+import com.GreenCart.GreenCart.domain.service.OrderItemService;
 
 @RestController
 @RequestMapping("/pedidos")
 public class OrderController {
+
     @Autowired
     private OrderService orderService;
 
@@ -28,7 +30,10 @@ public class OrderController {
 
     @Autowired
     private PedidoCrudRepository pedidoRepository;
-
+    
+    @Autowired
+    private  OrderItemService orderItemService;
+            
     //Listar todos los pedidos
     @GetMapping("/all")
     public ResponseEntity<List<Order>> getAll() {
@@ -75,7 +80,9 @@ public class OrderController {
     @GetMapping("/{id}/pdf")
     public ResponseEntity<byte[]> generarPDF(@PathVariable int id) {
         Optional<Order> optionalOrder = orderService.getOrder(id);
-        if (optionalOrder.isEmpty()) return ResponseEntity.notFound().build();
+        if (optionalOrder.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
 
         Order order = optionalOrder.get();
 
@@ -87,7 +94,9 @@ public class OrderController {
         }
 
         byte[] pdf = PDFService.generateOrderPDF(order, buyer);
-        if (pdf == null) return ResponseEntity.internalServerError().build();
+        if (pdf == null) {
+            return ResponseEntity.internalServerError().build();
+        }
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
@@ -111,20 +120,14 @@ public class OrderController {
         return orders.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(orders);
     }
 
-    // Cancelar pedido (solo si está PENDIENTE)
     @PostMapping("/{id}/cancelar")
     public ResponseEntity<String> cancelarPedido(@PathVariable Integer id) {
-        Pedido pedido = pedidoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
-
-        if (pedido.getEstado() != Pedido.EstadoPedido.PENDIENTE) {
-            return ResponseEntity.badRequest().body("Solo se pueden cancelar pedidos pendientes");
+        try {
+            orderItemService.cancelarPedido(id);
+            return ResponseEntity.ok("Pedido cancelado correctamente");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-
-        pedido.setEstado(Pedido.EstadoPedido.CANCELADO);
-        pedidoRepository.save(pedido);
-
-        return ResponseEntity.ok("Pedido cancelado correctamente");
     }
 
     // Marcar pedido como ENTREGADO (solo si está EN_PROCESO)

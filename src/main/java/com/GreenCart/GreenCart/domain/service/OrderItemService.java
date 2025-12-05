@@ -99,6 +99,28 @@ public class OrderItemService {
                 })
                 .orElse(false);
     }
+    
+    public void cancelarItemsDelPedido(Integer idPedido) {
+        List<Pedido_Item> items = pedidoItemRepository.findByPedidoIdPedido(idPedido);
+        for (Pedido_Item item : items) {
+            item.setEstado(Pedido_Item.EstadoItem.CANCELADO);
+        }
+        pedidoItemRepository.saveAll(items);
+    }
+
+    public void cancelarPedido(Integer idPedido) {
+        Pedido pedido = pedidoRepository.findById(idPedido)
+                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+
+        if (pedido.getEstado() != Pedido.EstadoPedido.PENDIENTE) {
+            throw new RuntimeException("Solo se pueden cancelar pedidos pendientes");
+        }
+
+        pedido.setEstado(Pedido.EstadoPedido.CANCELADO);
+        pedidoRepository.save(pedido);
+
+        cancelarItemsDelPedido(idPedido);
+    }
 
     // Actualizar estado de un item y del pedido si todos los items están en EN_PROCESO
     public boolean updateStatus(int itemId, String status) {
